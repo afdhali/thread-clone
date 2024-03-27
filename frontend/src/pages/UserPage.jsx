@@ -1,3 +1,9 @@
+import UserHeader from "../components/UserHeader";
+
 export function UserPage() {
-  return <div>User Page</div>;
+  return (
+    <>
+      <UserHeader />
+    </>
+  );
 }
