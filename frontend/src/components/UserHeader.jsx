@@ -40,13 +40,28 @@ export default function UserHeader() {
           </Text>
           <Flex gap={2} alignItems={"center"}>
             <Text fontSize={"sm"}>markzuckerberg</Text>
-            <Text fontSize={"x-small"} bg={"gray.dark"} color={"gray.light"}>
+            <Text
+              fontSize={{
+                base: "xs",
+                md: "sm",
+                lg: "medium",
+              }}
+              bg={"gray.dark"}
+              color={"gray.light"}
+            >
               threads.net
             </Text>
           </Flex>
         </Box>
         <Box>
-          <Avatar name="Mark Zuckerberg" src="/zuck-avatar.png" size={"xl"} />
+          <Avatar
+            name="Mark Zuckerberg"
+            src="/zuck-avatar.png"
+            size={{
+              base: "md",
+              md: "xl",
+            }}
+          />
         </Box>
       </Flex>
       <Text>This is a Biography</Text>
