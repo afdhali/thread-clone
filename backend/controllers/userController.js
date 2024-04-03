@@ -80,4 +80,47 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { signupUser, loginUser };
+const logoutUser = (req, res) => {
+  try {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.status(200).json({ message: "User logout successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in signup user: ", error.message);
+  }
+};
+
+const followUnFollowUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userToModify = await User.findById(id);
+    const currentUser = await User.findById(req.user._id);
+
+    if (id === req.user_id)
+      return res
+        .status(400)
+        .json({ error: "You Cannot follow/unfollow yourself" });
+
+    if (!userToModify || !currentUser)
+      return res.status(400).json({ error: "User not found" });
+
+    const isFollowing = currentUser.following.includes(id);
+
+    if (isFollowing) {
+      // unfollow user steps
+      await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
+      await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
+      res.status(200).json({ message: "User Unfollowed successfully" });
+    } else {
+      // Follow user steps
+      await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
+      await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
+      res.status(200).json({ message: "User followed successfully" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in follow unfollow user: ", error.message);
+  }
+};
+
+export { signupUser, loginUser, logoutUser, followUnFollowUser };
