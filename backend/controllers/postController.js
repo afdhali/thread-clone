@@ -69,4 +69,97 @@ const deletePost = async (req, res) => {
   }
 };
 
-export { createPost, getPost, deletePost };
+const likeUnlikePost = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+    const userId = req.user._id;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error: "Post NOt Found" });
+
+    const userLikedPost = post.likes.includes(userId);
+
+    if (userLikedPost) {
+      // unlike post
+      await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
+      res.status(200).json({ message: "Post Unliked Successfully" });
+    } else {
+      // like post
+      post.likes.push(userId);
+      await post.save();
+      res.status(200).json({ message: "Post liked successfully" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in likeUnlikePost : ", error.message);
+  }
+};
+
+const replyToPost = async (req, res) => {
+  try {
+    const { text } = req.body;
+    const postId = req.params.id;
+    const userId = req.user._id;
+    const userProfilePic = req.user.profilePic;
+    const username = req.user.username;
+
+    if (!text) {
+      return res.status(404).json({ error: "Text Field is Required!" });
+    }
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error: "Post Not FOund" });
+
+    const reply = { userId, text, userProfilePic, username };
+
+    post.replies.push(reply);
+    await post.save();
+    res.status(200).json(reply);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in replyToPost : ", error.message);
+  }
+};
+
+const deleteReply = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+    const userId = req.user._id;
+    const usernameReply = req.user.username;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error: "Post NOt Found" });
+
+    function isUsername(usernames) {
+      if (usernames.username === usernameReply) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    const userRepliedPost = post.replies.find(isUsername);
+
+    if (userRepliedPost) {
+      await Post.updateOne(
+        { _id: postId },
+        { $pull: { replies: { username: usernameReply } } }
+      );
+      res.status(200).json({ message: "Replied Delete Successfully" });
+    } else {
+      res.status(404).json({ error: "No Reply with this user" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in deleteReply: ", error.message);
+  }
+};
+
+export {
+  createPost,
+  getPost,
+  deletePost,
+  likeUnlikePost,
+  replyToPost,
+  deleteReply,
+};
