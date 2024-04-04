@@ -104,26 +104,28 @@ const replyToPost = async (req, res) => {
     const username = req.user.username;
 
     if (!text) {
-      return res.status(404).json({ error: "Text Field is Required!" });
+      return res.status(400).json({ error: "Text field is required" });
     }
 
     const post = await Post.findById(postId);
-    if (!post) return res.status(404).json({ error: "Post Not FOund" });
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
 
     const reply = { userId, text, userProfilePic, username };
 
     post.replies.push(reply);
     await post.save();
+
     res.status(200).json(reply);
   } catch (error) {
     res.status(500).json({ error: error.message });
-    console.log("Error in replyToPost : ", error.message);
   }
 };
 
 const deleteReply = async (req, res) => {
   try {
-    const { id: postId } = req.params;
+    const { postId, replyId } = req.params;
     const userId = req.user._id;
     const usernameReply = req.user.username;
 
@@ -143,7 +145,7 @@ const deleteReply = async (req, res) => {
     if (userRepliedPost) {
       await Post.updateOne(
         { _id: postId },
-        { $pull: { replies: { username: usernameReply } } }
+        { $pull: { replies: { username: usernameReply, _id: replyId } } }
       );
       res.status(200).json({ message: "Replied Delete Successfully" });
     } else {
