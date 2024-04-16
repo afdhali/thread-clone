@@ -6,8 +6,13 @@ const connectDB = async () => {
       //   useNewUrlParser: true,
       //   useUnifiedTopology: true,
       //   useCreateIndex: true,
+      serverApi: {
+        version: "1",
+        strict: true,
+        deprecationErrors: true,
+      },
     });
-
+    //await mongoose.connection.db.admin().command({ ping: 1 });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);

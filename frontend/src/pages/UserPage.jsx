@@ -1,7 +1,12 @@
 import UserHeader from "../components/UserHeader";
 import UserPost from "../components/UserPost";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 export function UserPage() {
+  const [user, setUser] = useState(null);
+  const { username } = useParams();
+
   return (
     <>
       <UserHeader />
