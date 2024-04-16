@@ -4,6 +4,7 @@ import { useCallback } from "react";
 const useShowToast = () => {
   const toast = useToast();
 
+  // using useCallback to avoid infinite loop render on useEffect at UserPage while using useShowToast hook
   const showToast = useCallback(
     (title, description, status) => {
       toast({

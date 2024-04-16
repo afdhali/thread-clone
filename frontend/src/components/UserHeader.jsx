@@ -11,13 +11,17 @@ import {
   MenuList,
   MenuItem,
   useToast,
+  Button,
 } from "@chakra-ui/react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
+import { Link as RouterLink } from "react-router-dom";
 
-export default function UserHeader() {
+export default function UserHeader({ user }) {
   const toast = useToast();
-
+  const currentUser = useRecoilValue(userAtom);
   const copyURL = () => {
     const currentURL = window.location.href;
     navigator.clipboard.writeText(currentURL).then(() => {
@@ -36,10 +40,10 @@ export default function UserHeader() {
       <Flex justifyContent={"space-between"} w={"full"}>
         <Box>
           <Text fontSize={"2xl"} fontWeight={"bold"}>
-            Mark Zuckerberg
+            {user.name}
           </Text>
           <Flex gap={2} alignItems={"center"}>
-            <Text fontSize={"sm"}>markzuckerberg</Text>
+            <Text fontSize={"sm"}>{user.username}</Text>
             <Text
               fontSize={{
                 base: "xs",
@@ -54,20 +58,38 @@ export default function UserHeader() {
           </Flex>
         </Box>
         <Box>
-          <Avatar
-            name="Mark Zuckerberg"
-            src="/zuck-avatar.png"
-            size={{
-              base: "md",
-              md: "xl",
-            }}
-          />
+          {user.profilePic ? (
+            <Avatar
+              name={user.name}
+              src={user.profilePic}
+              size={{
+                base: "md",
+                md: "xl",
+              }}
+            />
+          ) : (
+            <Avatar
+              name={user.name}
+              src="https://res.cloudinary.com/doqa6y5cv/image/upload/v1713247361/onerskaaq2ac1zarwyox.png"
+              size={{
+                base: "md",
+                md: "xl",
+              }}
+            />
+          )}
         </Box>
       </Flex>
-      <Text>This is a Biography</Text>
+      <Text>{user.bio}</Text>
+
+      {currentUser?._id === user._id && (
+        <Link as={RouterLink} to="/update">
+          <Button size={"sm"}>Update Profile</Button>
+        </Link>
+      )}
+
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
-          <Text color={"gray.light"}>3.2k Followers</Text>
+          <Text color={"gray.light"}>{user.followers.length} Followers</Text>
           <Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
           <Link color={"gray.light"}>instagram.com</Link>
         </Flex>
