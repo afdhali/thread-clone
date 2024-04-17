@@ -8,7 +8,7 @@ import HomePage from "./pages/HomePage";
 import AuthPage from "./pages/AuthPage";
 import { useRecoilValue } from "recoil";
 import userAtom from "./atoms/userAtom";
-import LogoutButton from "./components/LogoutButton";
+// import LogoutButton from "./components/LogoutButton";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import CreatePost from "./components/CreatePost";
 
@@ -43,7 +43,7 @@ function App() {
                   <CreatePost />
                 </>
               ) : (
-                <UserPage />
+                <Navigate to="/auth" />
               )
             }
           />
