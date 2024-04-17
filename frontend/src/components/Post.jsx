@@ -1,16 +1,19 @@
 import { Avatar, Image, Box, Flex, Text } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
+import postsAtom from "../atoms/postsAtom";
 import { formatDistanceToNow } from "date-fns";
 
 export default function Post({ post, postedBy }) {
   const [liked, setLiked] = useState(false);
   const [user, setUser] = useState(null);
+  const [posts, setPosts] = useRecoilState(postsAtom);
 
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom);
@@ -34,6 +37,26 @@ export default function Post({ post, postedBy }) {
     };
     getUser();
   }, [postedBy, showToast]);
+
+  const handleDeletePost = async (e) => {
+    try {
+      e.preventDefault();
+      if (!window.confirm("Are You sure to delete this post?")) return;
+
+      const res = await fetch(`/api/posts/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Post Deleted", "success");
+      setPosts(posts.filter((p) => p._id !== post._id));
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
 
   if (!user) return null;
   return (
@@ -92,16 +115,30 @@ export default function Post({ post, postedBy }) {
         <Flex flex={1} flexDirection={"column"} gap={2}>
           <Flex justifyContent={"space-between"} w={"full"}>
             <Flex w={"full"} alignItems={"center"}>
-              <Text fontSize={"sm"} fontWeight={"bold"}>
+              <Text
+                fontSize={"sm"}
+                fontWeight={"bold"}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate(`/${user.username}`);
+                }}
+              >
                 {user.username}
               </Text>
               <Image src="/verified.png" w={4} h={4} ml={1} />
             </Flex>
             <Flex gap={4} alignItems={"center"}>
-              <Text fontStyle={"sm"} color={"gray.light"}>
-                1d
+              <Text
+                fontSize={"xs"}
+                width={36}
+                textAlign={"right"}
+                color={"gray.light"}
+              >
+                {formatDistanceToNow(new Date(post.createdAt))} ago
               </Text>
-              <BsThreeDots />
+              {currentUser?._id === user._id && (
+                <DeleteIcon onClick={handleDeletePost} />
+              )}
             </Flex>
           </Flex>
 
@@ -117,19 +154,7 @@ export default function Post({ post, postedBy }) {
             </Box>
           )}
           <Flex gap={3} my={1}>
-            <Text fontSize={12} color={"gray.light"}>
-              <Actions liked={liked} setLiked={setLiked} />
-            </Text>
-          </Flex>
-
-          <Flex gap={2} alignItems={"center"}>
-            <Text color={"gray.light"} fontSize={"sm"}>
-              {post.replies.length} replies
-            </Text>
-            <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
-            <Text color={"gray.light"} fontSize={"sm"}>
-              {post.likes.length} likes
-            </Text>
+            <Actions post={post} />
           </Flex>
         </Flex>
       </Flex>

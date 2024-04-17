@@ -28,6 +28,7 @@ export function UserPage() {
         setLoading(false);
       }
     };
+    const getPosts = async () => {};
     getUser();
   }, [username, showToast]);
 
@@ -44,7 +45,7 @@ export function UserPage() {
   return (
     <>
       <UserHeader user={user} />
-      <UserPost
+      {/* <UserPost
         likes={1200}
         replies={481}
         postImg="/post1.png"
@@ -61,7 +62,7 @@ export function UserPage() {
         replies={1000}
         postImg="/post3.png"
         postTitle="I Love this Guy"
-      />
+      /> */}
     </>
   );
 }
