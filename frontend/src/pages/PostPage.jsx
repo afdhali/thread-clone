@@ -137,6 +137,15 @@ export default function PostPage() {
         <Button>Get</Button>
       </Flex>
       <Divider my={4} />
+
+      {post.replies.map((reply) => (
+        <Comment
+          key={reply._id}
+          reply={reply}
+          lastreply={reply._id === post.replies[post.replies.length - 1]._id}
+        />
+      ))}
+
       {/* <Comment
         comment="Looks Really good"
         createdAt="2d"
