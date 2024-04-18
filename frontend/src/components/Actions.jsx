@@ -73,12 +73,14 @@ const ShareSVG = () => {
   );
 };
 
-export default function Actions({ post: post_ }) {
+export default function Actions({ post }) {
   const user = useRecoilValue(userAtom);
   // const [liked, setLiked] = useState(post.likes.includes(user?._id));
-  const [liked, setLiked] = useState(post_.likes.includes(user?._id)); // jika direfresh tidak akan hilang state nya
-  // const [posts, setPosts] = useRecoilState(postsAtom);
-  const [post, setPost] = useState(post_);
+  // const [liked, setLiked] = useState(post_.likes.includes(user?._id));
+  // jika direfresh tidak akan hilang state nya
+  const [liked, setLiked] = useState(post.likes.includes(user?._id));
+  // const [post, setPost] = useState(post_);
+  const [posts, setPosts] = useRecoilState(postsAtom);
   const [isLiking, setIsLiking] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const [reply, setReply] = useState("");
@@ -103,16 +105,30 @@ export default function Actions({ post: post_ }) {
         },
       });
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       if (data.error) return showToast("Error", data.error, "error");
 
       if (!liked) {
         // add the id of the current user to post.likes array
-        setPost({ ...post, likes: [...post.likes, user._id] });
+        // setPost({ ...post, likes: [...post.likes, user._id] });
+        const updatedPosts = posts.map((p) => {
+          if (p._id === post._id) {
+            return { ...p, likes: [...p.likes, user._id] };
+          }
+          return p;
+        });
+        setPosts(updatedPosts);
       } else {
-        setPost({ ...post, likes: post.likes.filter((id) => id !== user._id) });
+        // setPost({ ...post, likes: post.likes.filter((id) => id !== user._id) });
+        const updatedPosts = posts.map((p) => {
+          if (p._id === post._id) {
+            return { ...p, likes: p.likes.filter((id) => id !== user._id) };
+          }
+          return p;
+        });
+        setPosts(updatedPosts);
       }
-      console.log(post_.likes);
+      // console.log(post.likes);
       setLiked(!liked);
     } catch (error) {
       showToast("Error", error.message, "error");
@@ -139,11 +155,17 @@ export default function Actions({ post: post_ }) {
         body: JSON.stringify({ text: reply }),
       });
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       if (data.error) return showToast("Error", data.error, "error");
-      setPost({ ...post, replies: [...post.replies, data] });
+      // setPost({ ...post, replies: [...post.replies, data] });
+      const updatedPosts = posts.map((p) => {
+        if (p._id === post._id) {
+          return { ...p, replies: [...p.replies, data] };
+        }
+        return p;
+      });
+      setPosts(updatedPosts);
       showToast("Success", "Reply posted Successfully", "success");
-      console.log(post);
       onClose();
       setReply("");
     } catch (error) {

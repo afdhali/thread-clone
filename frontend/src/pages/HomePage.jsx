@@ -1,13 +1,14 @@
 import { Box, Flex, Spinner } from "@chakra-ui/react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import Post from "../components/Post";
+import postsAtom from "../atoms/postsAtom";
 
 export default function HomePage() {
   // const user = useRecoilValue(userAtom);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useRecoilState(postsAtom);
   const [loading, setLoading] = useState(true);
   const showToast = useShowToast();
 
@@ -29,8 +30,9 @@ export default function HomePage() {
         setLoading(false);
       }
     };
+    // console.log(posts);
     getFeedPosts();
-  }, [showToast]);
+  }, [showToast, setPosts]);
 
   return (
     <Flex gap="10" alignItems={"flex-start"}>

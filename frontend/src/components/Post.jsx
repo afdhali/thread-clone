@@ -7,12 +7,13 @@ import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
-// import postsAtom from "../atoms/postsAtom";
+import postsAtom from "../atoms/postsAtom";
 import { formatDistanceToNow } from "date-fns";
 
 export default function Post({ post, postedBy }) {
   // const [liked, setLiked] = useState(false);
   const [user, setUser] = useState(null);
+  const [posts, setPosts] = useRecoilState(postsAtom);
   // const [posts, setPosts] = useRecoilState(postsAtom);
 
   const showToast = useShowToast();
@@ -52,7 +53,8 @@ export default function Post({ post, postedBy }) {
         return;
       }
       showToast("Success", "Post Deleted", "success");
-      // setPosts(posts.filter((p) => p._id !== post._id));
+      setPosts(posts.filter((p) => p._id !== post._id));
+      // setPosts((prev) => prev.filter((p) => p._id !== post._id));
     } catch (error) {
       showToast("Error", error.message, "error");
     }
