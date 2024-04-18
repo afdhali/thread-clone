@@ -1,19 +1,19 @@
 import { Avatar, Image, Box, Flex, Text } from "@chakra-ui/react";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { BsThreeDots } from "react-icons/bs";
+// import { BsThreeDots } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import Actions from "./Actions";
 import useShowToast from "../hooks/useShowToast";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
-import postsAtom from "../atoms/postsAtom";
+// import postsAtom from "../atoms/postsAtom";
 import { formatDistanceToNow } from "date-fns";
 
 export default function Post({ post, postedBy }) {
-  const [liked, setLiked] = useState(false);
+  // const [liked, setLiked] = useState(false);
   const [user, setUser] = useState(null);
-  const [posts, setPosts] = useRecoilState(postsAtom);
+  // const [posts, setPosts] = useRecoilState(postsAtom);
 
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom);
@@ -52,7 +52,7 @@ export default function Post({ post, postedBy }) {
         return;
       }
       showToast("Success", "Post Deleted", "success");
-      setPosts(posts.filter((p) => p._id !== post._id));
+      // setPosts(posts.filter((p) => p._id !== post._id));
     } catch (error) {
       showToast("Error", error.message, "error");
     }

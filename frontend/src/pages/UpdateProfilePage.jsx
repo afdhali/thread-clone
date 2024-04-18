@@ -15,6 +15,7 @@ import userAtom from "../atoms/userAtom";
 import { useState, useRef } from "react";
 import useShowToast from "../hooks/useShowToast";
 import usePreviewImg from "../hooks/usePreviewImg";
+import { useNavigate } from "react-router-dom";
 
 export default function UpdateProfilePage() {
   const [user, setUser] = useRecoilState(userAtom);
@@ -30,6 +31,7 @@ export default function UpdateProfilePage() {
   const showToast = useShowToast();
 
   const { handleImageChange, imgUrl } = usePreviewImg();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -157,6 +159,10 @@ export default function UpdateProfilePage() {
               w="full"
               _hover={{
                 bg: "red.500",
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
               }}
             >
               Cancel

@@ -6,55 +6,128 @@ import {
   Box,
   Divider,
   Button,
+  Spinner,
 } from "@chakra-ui/react";
 import { BsThreeDots } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Actions from "../components/Actions";
 import Comment from "../components/Comment";
+import useGetUserProfile from "../hooks/useGetUserProfile";
+import useShowToast from "../hooks/useShowToast";
+import { useNavigate, useParams } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import postsAtom from "../atoms/postsAtom";
+import { useRecoilValue } from "recoil";
+import userAtom from "../atoms/userAtom";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 export default function PostPage() {
-  const [liked, setLiked] = useState(false);
+  const { user, loading } = useGetUserProfile();
+  const [post, setPost] = useState(null);
+  const showToast = useShowToast();
+  const { pid } = useParams();
+  const currentUser = useRecoilValue(userAtom);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getPost = async () => {
+      try {
+        const res = await fetch(`/api/posts/${pid}`);
+        const data = await res.json();
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+        setPost(data);
+      } catch (error) {
+        showToast("Error", error.message, "error");
+      }
+    };
+    getPost();
+  }, [showToast, pid]);
+
+  const handleDeletePost = async (e) => {
+    try {
+      e.preventDefault();
+      if (!window.confirm("Are You sure to delete this post?")) return;
+
+      const res = await fetch(`/api/posts/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Post Deleted", "success");
+      navigate(`/${user.username}`);
+      // setPosts(posts.filter((p) => p._id !== post._id));
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
+
+  if (!user && loading) {
+    return (
+      <Flex justifyContent={"center"}>
+        <Spinner size={"xl"} />
+      </Flex>
+    );
+  }
+
+  if (!post) return null;
+
   return (
     <>
       <Flex>
         <Flex w={"full"} alignItems={"center"} gap={3}>
-          <Avatar src="/zuck-avatar.png" size={"md"} name="Mark Zuckerberg" />
+          <Avatar src={user.profilePic} size={"md"} name={user.name} />
           <Flex>
             <Text fontSize={"sm"} fontWeight={"bold"}>
-              markzuckerberg
+              {user.username}
             </Text>
             <Image src="/verified.png" w="4" h={4} ml={4} />
           </Flex>
         </Flex>
         <Flex gap={4} alignItems={"center"}>
           <Text fontSize={"sm"} color={"gray.light"}>
-            1d
+            {formatDistanceToNow(new Date(post.createdAt))} ago
           </Text>
+
+          {currentUser?._id === user._id && (
+            <DeleteIcon
+              size={20}
+              cursor={"pointer"}
+              onClick={handleDeletePost}
+            />
+          )}
         </Flex>
       </Flex>
-      <Text my={3}>Lets Talk about Threads</Text>
-      <Box
-        borderRadius={"6px"}
-        overflow={"hidden"}
-        border={"1px solid"}
-        borderColor={"gray.light"}
-      >
-        <Image src={"/post1.png"} w={"full"} />
-      </Box>
+      <Text my={3}>{post.text}</Text>
+      {post.img && (
+        <Box
+          borderRadius={"6px"}
+          overflow={"hidden"}
+          border={"1px solid"}
+          borderColor={"gray.light"}
+        >
+          <Image src={post.img} w={"full"} />
+        </Box>
+      )}
 
       <Flex gap={3} my={3}>
-        <Actions liked={liked} setLiked={setLiked} />
+        <Actions post={post} />
       </Flex>
 
-      <Flex gap={2} alignItems={"center"}>
+      {/* <Flex gap={2} alignItems={"center"}>
         <Text color={"gray.light"} fontSize={"sm"}>
-          238 replies
+          {post.replies.length} replies
         </Text>
         <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
         <Text color={"gray.light"} fontSize={"sm"}>
-          {200 + (liked ? 1 : 0)}
+          {post.likes.length} likes
         </Text>
-      </Flex>
+      </Flex> */}
       <Divider my={4} />
       <Flex justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
@@ -64,27 +137,13 @@ export default function PostPage() {
         <Button>Get</Button>
       </Flex>
       <Divider my={4} />
-      <Comment
+      {/* <Comment
         comment="Looks Really good"
         createdAt="2d"
         likes={100}
         username="Dan Abrahmov"
         userAvatar="https://bit.ly/dan-abramov"
-      />
-      <Comment
-        comment="Best For you"
-        createdAt="3d"
-        likes={15}
-        username="Kola Tioluwani"
-        userAvatar="https://bit.ly/tioluwani-kolawole"
-      />
-      <Comment
-        comment="This is a bad things"
-        createdAt="1w"
-        likes={1}
-        username="Kent Dodds"
-        userAvatar="https://bit.ly/kent-c-dodds"
-      />
+      /> */}
     </>
   );
 }

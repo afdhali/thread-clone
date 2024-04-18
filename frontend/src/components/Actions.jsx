@@ -139,10 +139,11 @@ export default function Actions({ post: post_ }) {
         body: JSON.stringify({ text: reply }),
       });
       const data = await res.json();
-      if (data.error) return showToast("Error", data.error, "error");
-      setPost({ ...post, replies: [...post.replies, data.reply] });
-      showToast("Success", "Reply posted Successfully", "success");
       console.log(data);
+      if (data.error) return showToast("Error", data.error, "error");
+      setPost({ ...post, replies: [...post.replies, data] });
+      showToast("Success", "Reply posted Successfully", "success");
+      console.log(post);
       onClose();
       setReply("");
     } catch (error) {

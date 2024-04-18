@@ -27,7 +27,7 @@ export default function UserHeader({ user }) {
   const showToast = useShowToast();
 
   const [following, setFollowing] = useState(
-    user.followers.includes(currentUser._id)
+    user.followers.includes(currentUser?._id)
   );
   const [updating, setUpdating] = useState(false);
 
