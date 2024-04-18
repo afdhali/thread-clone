@@ -33,6 +33,8 @@ export default function PostPage() {
   const currentPost = posts[0];
 
   useEffect(() => {
+    setPosts([]);
+    // console.log(currentPost._id);
     const getPost = async () => {
       try {
         const res = await fetch(`/api/posts/${pid}`);
@@ -147,7 +149,9 @@ export default function PostPage() {
         <Comment
           key={reply._id}
           reply={reply}
-          lastreply={
+          user={currentUser}
+          currentPost={currentPost}
+          lastReply={
             reply._id ===
             currentPost.replies[currentPost.replies.length - 1]._id
           }

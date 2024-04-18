@@ -15,6 +15,7 @@ export default function HomePage() {
   useEffect(() => {
     const getFeedPosts = async () => {
       setLoading(true);
+      setPosts([]);
       try {
         const res = await fetch("/api/posts/feed");
         const data = await res.json();
