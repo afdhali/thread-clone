@@ -82,13 +82,14 @@ async function getConversations(req, res) {
       path: "participants",
       select: "username profilePic",
     });
-
-    // removing key "currentUser" from participants array
+    // fungsi populate adalah mencari keinginan dari query sebelumnya dalam hal ini (participants: userId) dari ref yg di setting di schema dalam hal ini ref nya User di db dan dibalikan ke path yang ada di schema
+    // remove the current user from the participants array
     conversations.forEach((conversation) => {
       conversation.participants = conversation.participants.filter(
         (participant) => participant._id.toString() !== userId.toString()
       );
     });
+    // console.log(conversations);
     res.status(200).json(conversations);
   } catch (error) {
     res.status(500).json({ error: error.message });

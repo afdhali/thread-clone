@@ -12,10 +12,41 @@ import { SearchIcon } from "@chakra-ui/icons";
 import { GiConversation } from "react-icons/gi";
 import Conversation from "../components/Conversation";
 import MessageContainer from "../components/MessageContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useShowToast from "../hooks/useShowToast";
+import { useRecoilState } from "recoil";
+import { conversationsAtom } from "../atoms/messagesAtom";
 
 export default function ChatPage() {
   const [selectConversation, setSelectConversation] = useState(true);
+
+  const [loadingConversations, setLoadingConversations] = useState(true);
+  const showToast = useShowToast();
+
+  const [conversations, setConversations] = useRecoilState(conversationsAtom);
+
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await fetch("/api/messages/conversations");
+        const data = await res.json();
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+        setConversations(data);
+      } catch (error) {
+        showToast("Error", error.message, "error");
+      } finally {
+        const timer = setTimeout(() => {
+          setLoadingConversations(false);
+        }, 1500);
+        () => clearTimeout(timer);
+      }
+    };
+    getConversations();
+  }, [showToast, setConversations]);
+
   return (
     <Box
       position={"absolute"}
@@ -65,7 +96,7 @@ export default function ChatPage() {
             </Flex>
           </form>
 
-          {true &&
+          {loadingConversations &&
             [0, 1, 2, 3, 4].map((_, i) => (
               <Flex
                 key={i}
@@ -83,9 +114,13 @@ export default function ChatPage() {
                 </Flex>
               </Flex>
             ))}
-          <Conversation />
-          <Conversation />
-          <Conversation />
+          {!loadingConversations &&
+            conversations.map((conversation) => (
+              <Conversation
+                key={conversation._id}
+                conversation={conversation}
+              />
+            ))}
         </Flex>
         {!selectConversation && (
           <Flex
