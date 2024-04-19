@@ -32,6 +32,7 @@ export default function MessageContainer() {
 
   useEffect(() => {
     setLoadingMessages(true);
+    setMessages([]);
     const getMessages = async () => {
       try {
         const res = await fetch(`/api/messages/${selectedConversation.userId}`);
@@ -52,6 +53,11 @@ export default function MessageContainer() {
     };
     getMessages();
   }, [showToast, selectedConversation.userId]);
+
+  useEffect(() => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
     <Flex
       flex="70"
@@ -118,7 +124,7 @@ export default function MessageContainer() {
           ))}
       </Flex>
 
-      <MessageInput />
+      <MessageInput setMessages={setMessages} />
     </Flex>
   );
 }

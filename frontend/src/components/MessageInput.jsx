@@ -17,25 +17,78 @@ import { IoSendSharp } from "react-icons/io5";
 import { BsFillImageFill } from "react-icons/bs";
 import { useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
+import useShowToast from "../hooks/useShowToast";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  conversationsAtom,
+  selectedConversationAtom,
+} from "../atoms/messagesAtom";
 
-export default function MessageInput() {
+export default function MessageInput({ setMessages }) {
   const [messageText, setMessageText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const imageRef = useRef(null);
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
   const { onClose } = useDisclosure();
+  const showToast = useShowToast();
+
+  const selectedConversation = useRecoilValue(selectedConversationAtom);
+  const setConversations = useSetRecoilState(conversationsAtom);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!messageText) return;
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: messageText,
+          recipientId: selectedConversation.userId,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      setMessages((messages) => [...messages, data]);
+      // state lifting up ke conversations
+      setConversations((prevConvs) => {
+        const updatedConversations = prevConvs.map((conversation) => {
+          if (conversation._id === selectedConversation._id) {
+            return {
+              ...conversation,
+              lastMessage: {
+                text: messageText,
+                sender: data.sender,
+              },
+            };
+          }
+          return conversation;
+        });
+        return updatedConversations;
+      });
+      setMessageText("");
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
 
   return (
     <Flex gap={2} alignItems={"center"}>
       <form style={{ flex: 95 }}>
         <InputGroup>
           <Input
+            onSubmit={handleSendMessage}
             w={"full"}
             placeholder="Type a message"
             onChange={(e) => setMessageText(e.target.value)}
             value={messageText}
           />
-          <InputRightElement cursor={"pointer"}>
+          <InputRightElement cursor={"pointer"} onClick={handleSendMessage}>
             <IoSendSharp />
           </InputRightElement>
         </InputGroup>
