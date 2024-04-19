@@ -6,7 +6,7 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import useShowToast from "../hooks/useShowToast";
 import { useNavigate } from "react-router-dom";
 
-export default function Comment({ reply, lastreply, user, currentPost }) {
+export default function Comment({ reply, user, currentPost }) {
   const showToast = useShowToast();
   const navigate = useNavigate();
 
@@ -54,8 +54,12 @@ export default function Comment({ reply, lastreply, user, currentPost }) {
           <DeleteIcon onClick={handleDeleteReply} />
         )}
       </Flex>
-
-      {!lastreply ? <Divider my={4} /> : null}
+      {/* {console.log(reply._id)} */}
+      {reply._id === currentPost.replies[currentPost.replies.length - 1]._id ? (
+        ""
+      ) : (
+        <Divider my={4} />
+      )}
     </>
   );
 }

@@ -2,6 +2,7 @@ import { Flex, Image, useColorMode, Link, Button } from "@chakra-ui/react";
 import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
+import { BsFillChatQuoteFill } from "react-icons/bs";
 import { Link as RouterLink } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
@@ -40,9 +41,12 @@ export default function Header() {
       />
 
       {user && (
-        <Flex>
+        <Flex alignItems={"center"} gap={4}>
           <Link as={RouterLink} to={`/${user.username}`}>
             <RxAvatar size={24} />
+          </Link>
+          <Link as={RouterLink} to={"/chat"}>
+            <BsFillChatQuoteFill size={20} />
           </Link>
           <Button size={"xs"} onClick={logout}>
             <FiLogOut size={20} />

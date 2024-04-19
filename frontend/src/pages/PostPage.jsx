@@ -49,7 +49,7 @@ export default function PostPage() {
         showToast("Error", error.message, "error");
       }
     };
-    console.log(posts);
+    // console.log(posts);
     getPost();
   }, [showToast, pid, setPosts]);
 
@@ -145,16 +145,12 @@ export default function PostPage() {
       </Flex>
       <Divider my={4} />
 
-      {currentPost.replies.map((reply) => (
+      {currentPost.replies.map((reply, index) => (
         <Comment
-          key={reply._id}
+          key={reply._id || index}
           reply={reply}
           user={currentUser}
           currentPost={currentPost}
-          lastReply={
-            reply._id ===
-            currentPost.replies[currentPost.replies.length - 1]._id
-          }
         />
       ))}
 
