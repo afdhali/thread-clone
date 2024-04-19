@@ -17,7 +17,6 @@ import userAtom from "../atoms/userAtom";
 import { selectedConversationAtom } from "../atoms/messagesAtom";
 
 export default function Conversation({ conversation }) {
-  const [bg, setBg] = useState(true);
   const [avatar, setAvatar] = useState(true);
   const colorMode = useColorMode();
 

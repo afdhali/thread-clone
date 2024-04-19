@@ -14,8 +14,11 @@ import Conversation from "../components/Conversation";
 import MessageContainer from "../components/MessageContainer";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
-import { useRecoilState } from "recoil";
-import { conversationsAtom } from "../atoms/messagesAtom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  conversationsAtom,
+  selectedConversationAtom,
+} from "../atoms/messagesAtom";
 
 export default function ChatPage() {
   const [selectConversation, setSelectConversation] = useState(true);
@@ -24,6 +27,9 @@ export default function ChatPage() {
   const showToast = useShowToast();
 
   const [conversations, setConversations] = useRecoilState(conversationsAtom);
+  const [selectedConversation, setSelectedConversation] = useRecoilState(
+    selectedConversationAtom
+  );
 
   useEffect(() => {
     const getConversations = async () => {
@@ -122,7 +128,7 @@ export default function ChatPage() {
               />
             ))}
         </Flex>
-        {!selectConversation && (
+        {!selectedConversation._id && (
           <Flex
             flex={70}
             borderRadius={"md"}
@@ -133,10 +139,10 @@ export default function ChatPage() {
             height={"400px"}
           >
             <GiConversation size={100} />
-            <Text fontSize={20}>MessageContainer</Text>
+            <Text fontSize={20}>Your Trendy Messaging is Here</Text>
           </Flex>
         )}
-        {selectConversation && <MessageContainer />}
+        {selectedConversation._id && <MessageContainer />}
       </Flex>
     </Box>
   );
