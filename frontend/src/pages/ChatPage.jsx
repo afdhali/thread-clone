@@ -55,7 +55,7 @@ export default function ChatPage() {
       }
     };
     getConversations();
-  }, [showToast, setConversations, conversations]);
+  }, [showToast, setConversations]);
 
   const handleConversationSearch = async (e) => {
     e.preventDefault();
@@ -85,6 +85,25 @@ export default function ChatPage() {
         });
         return;
       }
+
+      // make mock conversation to rearenge searched conversations
+      const mockConversation = {
+        mock: true,
+        lastMessage: {
+          text: "",
+          sender: "",
+        },
+        _id: Date.now(),
+        participants: [
+          {
+            _id: data._id,
+            username: data.username,
+            profilePic: data.profilePic,
+          },
+        ],
+      };
+      // state lifting up
+      setConversations((prevConvs) => [...prevConvs, mockConversation]);
     } catch (error) {
       showToast("Error", error.message, "error");
     } finally {
