@@ -18,6 +18,7 @@ import {
 } from "../atoms/messagesAtom";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
+import { useSocket } from "../context/SocketContext";
 
 export default function MessageContainer() {
   const showToast = useShowToast();
@@ -29,6 +30,15 @@ export default function MessageContainer() {
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [messages, setMessages] = useState([]);
   const messageEndRef = useRef(null);
+
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    socket.on("newMessage", (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+    return () => socket.off("newMessage");
+  }, [socket]);
 
   useEffect(() => {
     setLoadingMessages(true);

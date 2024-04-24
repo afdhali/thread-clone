@@ -20,6 +20,7 @@ import {
   selectedConversationAtom,
 } from "../atoms/messagesAtom";
 import userAtom from "../atoms/userAtom";
+import { useSocket } from "../context/SocketContext";
 
 export default function ChatPage() {
   const [selectConversation, setSelectConversation] = useState(true);
@@ -34,6 +35,8 @@ export default function ChatPage() {
   );
   const [searchText, setSearchText] = useState("");
   const [searchingUser, setSearchingUser] = useState(false);
+
+  const { socket, onlineUsers } = useSocket();
 
   useEffect(() => {
     const getConversations = async () => {
@@ -192,6 +195,9 @@ export default function ChatPage() {
               <Conversation
                 key={conversation._id}
                 conversation={conversation}
+                isOnline={onlineUsers.includes(
+                  conversation.participants[0]._id
+                )}
               />
             ))}
         </Flex>
