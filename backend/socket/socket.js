@@ -28,6 +28,25 @@ io.on("connection", (socket) => {
   // create event but not yet listen to the client
   io.emit("getOnlineUsers", Object.keys(userSocketMap)); //[1,2,3,..]
 
+  socket.on("markMessagesAsSeen", async ({ conversationId, userId }) => {
+    try {
+      await Message.updateMany(
+        {
+          conversationId: conversationId,
+          seen: false,
+        },
+        { $set: { seen: true } }
+      );
+      await Conversation.updateOne(
+        { _id: conversationId },
+        { $set: { "lastMessage.seen": true } }
+      );
+      io.to(userSocketMap[userId]).emit("messagesSeen", { conversationId });
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
     delete userSocketMap[userId];

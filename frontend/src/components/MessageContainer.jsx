@@ -22,9 +22,10 @@ import { useSocket } from "../context/SocketContext";
 
 export default function MessageContainer() {
   const showToast = useShowToast();
-  const [selectedConversation, setSelectedConversation] = useRecoilState(
-    selectedConversationAtom
-  );
+  // const [selectedConversation, setSelectedConversation] = useRecoilState(
+  //   selectedConversationAtom
+  // );
+  const selectedConversation = useRecoilValue(selectedConversationAtom);
   const setConversations = useSetRecoilState(conversationsAtom);
   const currentUser = useRecoilValue(userAtom);
   const [loadingMessages, setLoadingMessages] = useState(true);
@@ -59,6 +60,34 @@ export default function MessageContainer() {
   }, [socket, selectedConversation, setConversations]);
 
   useEffect(() => {
+    const lastMessageIsFromOtherUser =
+      messages.length &&
+      messages[messages.length - 1].sender !== currentUser._id;
+    if (lastMessageIsFromOtherUser) {
+      socket.emit("markMessagesAsSeen", {
+        conversationId: selectedConversation._id,
+        userId: selectedConversation.userId,
+      });
+    }
+    socket.on("messagesSeen", ({ conversationId }) => {
+      if (selectedConversation._id === conversationId) {
+        setMessages((prev) => {
+          const updatedMessages = prev.map((message) => {
+            if (!message.seen) {
+              return {
+                ...message,
+                seen: true,
+              };
+            }
+            return message;
+          });
+          return updatedMessages;
+        });
+      }
+    });
+  }, [socket, currentUser._id, messages, selectedConversation]);
+
+  useEffect(() => {
     const getMessages = async () => {
       setLoadingMessages(true);
       setMessages([]);
@@ -80,7 +109,7 @@ export default function MessageContainer() {
       }
     };
     getMessages();
-  }, [showToast, selectedConversation.userId]);
+  }, [showToast, selectedConversation.userId, selectedConversation.mock]);
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
