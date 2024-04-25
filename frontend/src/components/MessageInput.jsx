@@ -37,7 +37,10 @@ export default function MessageInput({ setMessages }) {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!messageText) return;
+    if (!messageText && !imgUrl) return;
+    if (isSending) return;
+    setIsSending(true);
+
     try {
       const res = await fetch("/api/messages", {
         method: "POST",
@@ -47,6 +50,7 @@ export default function MessageInput({ setMessages }) {
         body: JSON.stringify({
           message: messageText,
           recipientId: selectedConversation.userId,
+          img: imgUrl,
         }),
       });
       const data = await res.json();
@@ -72,14 +76,17 @@ export default function MessageInput({ setMessages }) {
         return updatedConversations;
       });
       setMessageText("");
+      setImgUrl("");
     } catch (error) {
       showToast("Error", error.message, "error");
+    } finally {
+      setIsSending(false);
     }
   };
 
   return (
     <Flex gap={2} alignItems={"center"}>
-      <form style={{ flex: 95 }}>
+      <form style={{ flex: 95 }} onSubmit={handleSendMessage}>
         <InputGroup>
           <Input
             onSubmit={handleSendMessage}
@@ -119,7 +126,11 @@ export default function MessageInput({ setMessages }) {
             </Flex>
             <Flex justifyContent={"flex-end"} my={2}>
               {!isSending ? (
-                <IoSendSharp size={24} cursor={"pointer"} />
+                <IoSendSharp
+                  size={24}
+                  cursor={"pointer"}
+                  onClick={handleSendMessage}
+                />
               ) : (
                 <Spinner size={"md"} />
               )}
