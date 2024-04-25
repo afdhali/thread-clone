@@ -10,7 +10,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  useToast,
   Button,
 } from "@chakra-ui/react";
 import { BsInstagram } from "react-icons/bs";
@@ -18,18 +17,20 @@ import { CgMoreO } from "react-icons/cg";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { Link as RouterLink } from "react-router-dom";
-import { useState } from "react";
+// import { useState } from "react";
 import useShowToast from "../hooks/useShowToast";
+import useFollowUnfollow from "../hooks/useFollowUnfollow";
 
 export default function UserHeader({ user }) {
-  // const showToast = useToast();
   const currentUser = useRecoilValue(userAtom);
   const showToast = useShowToast();
 
-  const [following, setFollowing] = useState(
-    user.followers.includes(currentUser?._id)
-  );
-  const [updating, setUpdating] = useState(false);
+  const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
+
+  // const [following, setFollowing] = useState(
+  //   user.followers.includes(currentUser?._id)
+  // );
+  // const [updating, setUpdating] = useState(false);
 
   // console.log(following);
 
@@ -47,44 +48,44 @@ export default function UserHeader({ user }) {
     });
   };
 
-  const handleFollowUnfollow = async () => {
-    if (!currentUser) {
-      showToast("Error", "Please Login to Follow", "error");
-      return;
-    }
-    if (updating) return;
+  // const handleFollowUnfollow = async () => {
+  //   if (!currentUser) {
+  //     showToast("Error", "Please Login to Follow", "error");
+  //     return;
+  //   }
+  //   if (updating) return;
 
-    setUpdating(true);
-    try {
-      const res = await fetch(`/api/users/follow/${user._id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      // console.log(data);
-      if (data.error) {
-        showToast("Error", data.error, "error");
-        return;
-      }
+  //   setUpdating(true);
+  //   try {
+  //     const res = await fetch(`/api/users/follow/${user._id}`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const data = await res.json();
+  //     // console.log(data);
+  //     if (data.error) {
+  //       showToast("Error", data.error, "error");
+  //       return;
+  //     }
 
-      // simulate followers numbers on client rendering
-      if (following) {
-        showToast("Success", `Unfollow ${user.name}`, "success");
-        user.followers.pop();
-      } else {
-        showToast("Success", `Followed ${user.name}`, "success");
-        user.followers.push();
-      }
+  //     // simulate followers numbers on client rendering
+  //     if (following) {
+  //       showToast("Success", `Unfollow ${user.name}`, "success");
+  //       user.followers.pop();
+  //     } else {
+  //       showToast("Success", `Followed ${user.name}`, "success");
+  //       user.followers.push();
+  //     }
 
-      setFollowing(!following);
-    } catch (error) {
-      showToast("Error", error, "error");
-    } finally {
-      setUpdating(false);
-    }
-  };
+  //     setFollowing(!following);
+  //   } catch (error) {
+  //     showToast("Error", error, "error");
+  //   } finally {
+  //     setUpdating(false);
+  //   }
+  // };
 
   return (
     <VStack gap={4} alignItems={"start"}>
