@@ -35,15 +35,33 @@ export default function MessageContainer() {
 
   useEffect(() => {
     socket.on("newMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      if (selectedConversation._id === message.conversationId) {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      }
+      setConversations((prev) => {
+        const updatedConversations = prev.map((conversation) => {
+          if (conversation._id === message.conversationId) {
+            return {
+              ...conversation,
+              lastMessage: {
+                text: message.text,
+                sender: message.sender,
+              },
+            };
+          }
+          return conversation;
+        });
+        return updatedConversations;
+      });
     });
+
     return () => socket.off("newMessage");
-  }, [socket]);
+  }, [socket, selectedConversation, setConversations]);
 
   useEffect(() => {
-    setLoadingMessages(true);
-    setMessages([]);
     const getMessages = async () => {
+      setLoadingMessages(true);
+      setMessages([]);
       try {
         const res = await fetch(`/api/messages/${selectedConversation.userId}`);
         const data = await res.json();
