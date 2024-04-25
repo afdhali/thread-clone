@@ -4,6 +4,7 @@ import userAtom from "../atoms/userAtom";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import Post from "../components/Post";
+import SuggestedUsers from "../components/SuggestedUsers";
 import postsAtom from "../atoms/postsAtom";
 
 export default function HomePage() {
@@ -51,7 +52,9 @@ export default function HomePage() {
           <Post key={post._id} post={post} postedBy={post.postedBy} />
         ))}
       </Box>
-      <Box flex={30}></Box>
+      <Box flex={30} display={{ base: "none", md: "block" }}>
+        <SuggestedUsers />
+      </Box>
     </Flex>
   );
 }
