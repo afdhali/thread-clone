@@ -3,6 +3,7 @@ import { AiFillHome } from "react-icons/ai";
 import { RxAvatar } from "react-icons/rx";
 import { FiLogOut } from "react-icons/fi";
 import { BsFillChatQuoteFill } from "react-icons/bs";
+import { MdOutlineSettings } from "react-icons/md";
 import { Link as RouterLink } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
@@ -47,6 +48,9 @@ export default function Header() {
           </Link>
           <Link as={RouterLink} to={"/chat"}>
             <BsFillChatQuoteFill size={20} />
+          </Link>
+          <Link as={RouterLink} to={"/settings"}>
+            <MdOutlineSettings size={20} />
           </Link>
           <Button size={"xs"} onClick={logout}>
             <FiLogOut size={20} />

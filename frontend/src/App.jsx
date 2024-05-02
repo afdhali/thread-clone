@@ -12,6 +12,7 @@ import userAtom from "./atoms/userAtom";
 import UpdateProfilePage from "./pages/UpdateProfilePage";
 import CreatePost from "./components/CreatePost";
 import ChatPage from "./pages/ChatPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const a = [1, 2, 3];
 
@@ -54,6 +55,10 @@ function App() {
           <Route
             path="/chat"
             element={user ? <ChatPage /> : <Navigate to="/auth" />}
+          />
+          <Route
+            path="/settings"
+            element={user ? <SettingsPage /> : <Navigate to={"/auth"} />}
           />
         </Routes>
         {/* {user && <LogoutButton />} */}
