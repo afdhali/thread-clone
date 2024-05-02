@@ -14,7 +14,7 @@ import CreatePost from "./components/CreatePost";
 import ChatPage from "./pages/ChatPage";
 import SettingsPage from "./pages/SettingsPage";
 
-const a = [1, 2, 3];
+// const a = [1, 2, 3];
 
 function App() {
   const user = useRecoilValue(userAtom);

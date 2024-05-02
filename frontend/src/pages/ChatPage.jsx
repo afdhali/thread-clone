@@ -23,7 +23,7 @@ import userAtom from "../atoms/userAtom";
 import { useSocket } from "../context/SocketContext";
 
 export default function ChatPage() {
-  const [selectConversation, setSelectConversation] = useState(true);
+  // const [selectConversation, setSelectConversation] = useState(true);
 
   const [loadingConversations, setLoadingConversations] = useState(true);
   const showToast = useShowToast();

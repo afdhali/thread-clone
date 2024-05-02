@@ -8,8 +8,8 @@ import {
   Button,
   Spinner,
 } from "@chakra-ui/react";
-import { BsThreeDots } from "react-icons/bs";
-import { useEffect, useState } from "react";
+// import { BsThreeDots } from "react-icons/bs";
+import { useEffect } from "react";
 import Actions from "../components/Actions";
 import Comment from "../components/Comment";
 import useGetUserProfile from "../hooks/useGetUserProfile";

@@ -1,5 +1,5 @@
 import UserHeader from "../components/UserHeader";
-import UserPost from "../components/UserPost";
+// import UserPost from "../components/UserPost";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
@@ -20,6 +20,7 @@ export function UserPage() {
 
   useEffect(() => {
     const getPosts = async () => {
+      if (!user) return;
       setFetchingPosts(true);
       try {
         const res = await fetch(`/api/posts/user/${username}`);
@@ -33,9 +34,9 @@ export function UserPage() {
         setFetchingPosts(false);
       }
     };
-    console.log(posts);
+    // console.log(posts);
     getPosts();
-  }, [username, showToast, setPosts]);
+  }, [username, showToast, setPosts, user]);
 
   if (!user && loading) {
     return (
