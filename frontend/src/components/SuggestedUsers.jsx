@@ -19,7 +19,7 @@ export default function SuggestedUsers() {
           return;
         }
         setSuggestedUsers(data);
-        console.log(data);
+        // console.log(data);
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
